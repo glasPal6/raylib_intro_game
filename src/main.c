@@ -6,11 +6,11 @@
 
 #define DEBUG true
 
-#ifdef DEBUG
+#if DEBUG
 #define DEBUG_EXP(EXP) EXP
 #else
 #define DEBUG_EXP(EXP)
-#endif /* ifdef  DEBUG */
+#endif
 
 // --------------------------------------
 // Declarations
@@ -61,13 +61,13 @@ int main(void) {
     Player players[2] = {0, 0};
     players[0].position = (Vector2){PLAYER_OFFSET, screen_height / 2 - 10};
     players[0].velocity = (Vector2){8.0f, 0.0f};
-    players[0].size = (Vector2){50, 20};
+    players[0].size = (Vector2){10, 50};
     players[0].points = 0;
 
     players[1].position =
         (Vector2){screen_width - PLAYER_OFFSET, screen_height / 2 - 10};
     players[1].velocity = (Vector2){8.0f, 0.0f};
-    players[1].size = (Vector2){50, 20};
+    players[1].size = (Vector2){10, 50};
     players[1].points = 0;
 
     Ball ball = {0};
@@ -97,8 +97,11 @@ int main(void) {
             break;
         case GAMEPLAY:
             frames_count = 0;
-            if (IsKeyPressed(KEY_ENTER))
-                screen = ENDING;
+
+            if (!game_paused) {
+                // Game Logid
+            }
+
             break;
         }
 
@@ -112,20 +115,53 @@ int main(void) {
 
         switch (screen) {
         case INTRO:
-            DrawText("Intro Screen", GetScreenWidth()/2 - MeasureText("Intro Screen", 80)/2, 350, 80, GRAY);
-            DrawText(seconds, GetScreenWidth()/2 - MeasureText(seconds, 20)/2, 450, 20, GRAY);
+            DrawText("Intro Screen",
+                     GetScreenWidth() / 2 - MeasureText("Intro Screen", 80) / 2,
+                     350, 80, GRAY);
+            DrawText(seconds,
+                     GetScreenWidth() / 2 - MeasureText(seconds, 20) / 2, 450,
+                     20, GRAY);
             break;
         case TITLE:
-            DrawText("PONG", GetScreenWidth()/2 - MeasureText("PONG", 80)/2, 350, 80, GRAY);
-            if ((frames_count/30)%2 == 0)
-                DrawText("Press [ENTER] to Play", GetScreenWidth()/2 - MeasureText("Press [ENTER] to Play", 20)/2, 450, 20, GRAY);
+            DrawText("PONG", GetScreenWidth() / 2 - MeasureText("PONG", 80) / 2,
+                     350, 80, GRAY);
+            if ((frames_count / 30) % 2 == 0)
+                DrawText("Press [ENTER] to Play",
+                         GetScreenWidth() / 2 -
+                             MeasureText("Press [ENTER] to Play", 20) / 2,
+                         450, 20, GRAY);
             break;
         case GAMEPLAY:
+            DrawFPS(10, 10);
+
+            // Draw the middle line
+            for (int8_t i = 0; i < 10; i++) {
+                DrawLine(GetScreenWidth()/2, i*100+25, GetScreenWidth()/2, i*100+75, BLACK);
+            }
+
+            // Draw players and ball
+            DrawRectangle(players[0].position.x, players[0].position.y, players[0].size.x, players[0].size.y, BLACK);
+            DrawRectangle(players[1].position.x, players[1].position.y, players[1].size.x, players[1].size.y, BLACK);
+            DrawCircleV(ball.position, ball.radius, MAROON);
+
+            // Draw score
+            char *score = malloc(15 + 1);
+            sprintf(score, "%d   %d", players[0].points, players[1].points);
+            DrawText(score, GetScreenWidth()/2 - MeasureText(score, 80)/2, 0, 80, GRAY);
+
+            // Draw pause message if needed
+            if (game_paused) {
+                DrawText("GAME PAUSED", GetScreenWidth()/2 - MeasureText("GAME PAUSED", 80), 350, 80, GRAY);
+            }
 
             break;
         case ENDING:
-            DrawText("Player X Won", GetScreenWidth()/2 - MeasureText("Player X Won", 80)/2, 350, 80, GRAY);
-            DrawText(seconds, GetScreenWidth()/2 - MeasureText(seconds, 20)/2, 450, 20, GRAY);
+            DrawText("Player X Won",
+                     GetScreenWidth() / 2 - MeasureText("Player X Won", 80) / 2,
+                     350, 80, GRAY);
+            DrawText(seconds,
+                     GetScreenWidth() / 2 - MeasureText(seconds, 20) / 2, 450,
+                     20, GRAY);
             break;
         }
 
