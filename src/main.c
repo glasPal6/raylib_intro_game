@@ -71,16 +71,16 @@ int main(void) {
         case ENDING:
             // Set Players and ball variables
             players[0].position =
-                (Vector2){PLAYER_OFFSET, screen_height / 2 - 10};
-            players[0].velocity = (Vector2){8.0f, 0.0f};
+                (Vector2){PLAYER_OFFSET, GetScreenHeight() / 2 - 10};
+            players[0].velocity = (Vector2){0.0f, 8.0f};
             players[0].size = (Vector2){10, 50};
             players[0].points = 0;
             players[1].position =
-                (Vector2){screen_width - PLAYER_OFFSET, screen_height / 2 - 10};
-            players[1].velocity = (Vector2){8.0f, 0.0f};
+                (Vector2){screen_width - PLAYER_OFFSET, GetScreenHeight() / 2 - 10};
+            players[1].velocity = (Vector2){0.0f, 8.0f};
             players[1].size = (Vector2){10, 50};
             players[1].points = 0;
-            ball.position = (Vector2){screen_width / 2, screen_height / 2};
+            ball.position = (Vector2){GetScreenWidth() / 2, GetScreenHeight() / 2};
             ball.velocity = (Vector2){4.0f, 4.0f};
             ball.radius = 5.0f;
             frames_count++;
@@ -108,7 +108,20 @@ int main(void) {
             }
 
             if (!game_paused) {
-                // Game Logid
+                // Game Logig
+                // Player logic
+                if (IsKeyDown(KEY_M)) players[0].position.y -= players[0].velocity.y;
+                if (IsKeyDown(KEY_N)) players[0].position.y += players[0].velocity.y;
+                if (IsKeyDown(KEY_Q)) players[1].position.y -= players[1].velocity.y;
+                if (IsKeyDown(KEY_E)) players[1].position.y += players[1].velocity.y;
+
+                if (players[0].position.y <= 0) players[0].position.y = 0;
+                if (players[0].position.y + players[0].size.y >= GetScreenHeight()) players[0].position.y = GetScreenHeight() - players[0].size.y;
+                if (players[1].position.y <= 0) players[1].position.y = 1;
+                if (players[1].position.y + players[1].size.y >= GetScreenHeight()) players[1].position.y = GetScreenHeight() - players[1].size.y;
+
+                players[0].bounds = (Rectangle){ players[0].position.x, players[0].position.y, players[0].size.x, players[0].size.y };
+                players[1].bounds = (Rectangle){ players[1].position.x, players[1].position.y, players[1].size.x, players[1].size.y };
             }
 
             break;
@@ -160,17 +173,17 @@ int main(void) {
             char *score = malloc(15 + 1);
             sprintf(score, "%d", players[0].points);
             DrawText(score,
-                     GetScreenWidth() / 2 - MeasureText(score, 80) / 2 - 50, 0,
+                     GetScreenWidth() / 2 - MeasureText(score, 80) / 2 - 100, 0,
                      80, GRAY);
             sprintf(score, "%d", players[1].points);
             DrawText(score,
-                     GetScreenWidth() / 2 - MeasureText(score, 80) / 2 + 50, 0,
+                     GetScreenWidth() / 2 - MeasureText(score, 80) / 2 + 100, 0,
                      80, GRAY);
 
             // Draw pause message if needed
             if (game_paused) {
                 DrawText("GAME PAUSED",
-                         GetScreenWidth() / 2 - MeasureText("GAME PAUSED", 80),
+                         GetScreenWidth() / 2 - MeasureText("GAME PAUSED", 80) / 2,
                          350, 80, GRAY);
             }
 
