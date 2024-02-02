@@ -59,21 +59,7 @@ int main(void) {
 
     // Initialize players and ball
     Player players[2] = {0, 0};
-    players[0].position = (Vector2){PLAYER_OFFSET, screen_height / 2 - 10};
-    players[0].velocity = (Vector2){8.0f, 0.0f};
-    players[0].size = (Vector2){10, 50};
-    players[0].points = 0;
-
-    players[1].position =
-        (Vector2){screen_width - PLAYER_OFFSET, screen_height / 2 - 10};
-    players[1].velocity = (Vector2){8.0f, 0.0f};
-    players[1].size = (Vector2){10, 50};
-    players[1].points = 0;
-
     Ball ball = {0};
-    ball.position = (Vector2){screen_width / 2, screen_height / 2};
-    ball.velocity = (Vector2){4.0f, 4.0f};
-    ball.radius = 5.0f;
 
     SetTargetFPS(60);
 
@@ -83,6 +69,20 @@ int main(void) {
         switch (screen) {
         case INTRO:
         case ENDING:
+            // Set Players and ball variables
+            players[0].position =
+                (Vector2){PLAYER_OFFSET, screen_height / 2 - 10};
+            players[0].velocity = (Vector2){8.0f, 0.0f};
+            players[0].size = (Vector2){10, 50};
+            players[0].points = 0;
+            players[1].position =
+                (Vector2){screen_width - PLAYER_OFFSET, screen_height / 2 - 10};
+            players[1].velocity = (Vector2){8.0f, 0.0f};
+            players[1].size = (Vector2){10, 50};
+            players[1].points = 0;
+            ball.position = (Vector2){screen_width / 2, screen_height / 2};
+            ball.velocity = (Vector2){4.0f, 4.0f};
+            ball.radius = 5.0f;
             frames_count++;
             // Wait 3 seconds
             if (frames_count > 180) {
@@ -97,6 +97,10 @@ int main(void) {
             break;
         case GAMEPLAY:
             frames_count = 0;
+
+            if (IsKeyPressed('P')) {
+                game_paused = !game_paused;
+            }
 
             if (!game_paused) {
                 // Game Logid
@@ -136,22 +140,28 @@ int main(void) {
 
             // Draw the middle line
             for (int8_t i = 0; i < 10; i++) {
-                DrawLine(GetScreenWidth()/2, i*100+25, GetScreenWidth()/2, i*100+75, BLACK);
+                DrawLine(GetScreenWidth() / 2, i * 100 + 25,
+                         GetScreenWidth() / 2, i * 100 + 75, BLACK);
             }
 
             // Draw players and ball
-            DrawRectangle(players[0].position.x, players[0].position.y, players[0].size.x, players[0].size.y, BLACK);
-            DrawRectangle(players[1].position.x, players[1].position.y, players[1].size.x, players[1].size.y, BLACK);
+            DrawRectangle(players[0].position.x, players[0].position.y,
+                          players[0].size.x, players[0].size.y, BLACK);
+            DrawRectangle(players[1].position.x, players[1].position.y,
+                          players[1].size.x, players[1].size.y, BLACK);
             DrawCircleV(ball.position, ball.radius, MAROON);
 
             // Draw score
             char *score = malloc(15 + 1);
             sprintf(score, "%d   %d", players[0].points, players[1].points);
-            DrawText(score, GetScreenWidth()/2 - MeasureText(score, 80)/2, 0, 80, GRAY);
+            DrawText(score, GetScreenWidth() / 2 - MeasureText(score, 80) / 2,
+                     0, 80, GRAY);
 
             // Draw pause message if needed
             if (game_paused) {
-                DrawText("GAME PAUSED", GetScreenWidth()/2 - MeasureText("GAME PAUSED", 80), 350, 80, GRAY);
+                DrawText("GAME PAUSED",
+                         GetScreenWidth() / 2 - MeasureText("GAME PAUSED", 80),
+                         350, 80, GRAY);
             }
 
             break;
