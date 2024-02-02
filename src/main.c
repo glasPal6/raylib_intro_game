@@ -16,8 +16,9 @@
 // Declarations
 // --------------------------------------
 
+#define TIME_TO_WAIT 5
 #define PLAYER_OFFSET 50
-#define MAX_SCORE 10
+#define MAX_SCORE 5
 
 // --------------------------------------
 // Types
@@ -43,6 +44,14 @@ typedef struct Ball {
 // --------------------------------------
 // Main Loop
 // --------------------------------------
+
+void setBallPosition(Ball *ball, bool left) {
+    ball->position = (Vector2){GetScreenWidth() / 2, GetScreenHeight() / 2};
+    if (left)
+        ball->velocity = (Vector2){-4.0f, 2.0f};
+    else
+        ball->velocity = (Vector2){4.0f, 2.0f};
+}
 
 int main(void) {
     // Initialization
@@ -74,23 +83,24 @@ int main(void) {
                 (Vector2){PLAYER_OFFSET, GetScreenHeight() / 2 - 10};
             players[0].velocity = (Vector2){0.0f, 8.0f};
             players[0].size = (Vector2){10, 50};
-            players[0].points = 0;
-            players[1].position =
-                (Vector2){screen_width - PLAYER_OFFSET, GetScreenHeight() / 2 - 10};
+
+            players[1].position = (Vector2){screen_width - PLAYER_OFFSET,
+                                            GetScreenHeight() / 2 - 10};
             players[1].velocity = (Vector2){0.0f, 8.0f};
             players[1].size = (Vector2){10, 50};
-            players[1].points = 0;
-            ball.position = (Vector2){GetScreenWidth() / 2, GetScreenHeight() / 2};
-            ball.velocity = (Vector2){4.0f, 4.0f};
+
+            setBallPosition(&ball, true);
             ball.radius = 5.0f;
             frames_count++;
             // Wait 3 seconds
-            if (frames_count > 180) {
+            if (frames_count > 60 * TIME_TO_WAIT) {
                 screen = TITLE;
                 frames_count = 0;
             }
             break;
         case TITLE:
+            players[0].points = 0;
+            players[1].points = 0;
             frames_count++;
             if (IsKeyPressed(KEY_ENTER))
                 screen = GAMEPLAY;
@@ -102,26 +112,67 @@ int main(void) {
                 game_paused = !game_paused;
             }
 
-            if (players[0].points > MAX_SCORE ||
-                players[1].points > MAX_SCORE) {
+            if (players[0].points > MAX_SCORE - 1 ||
+                players[1].points > MAX_SCORE - 1) {
                 screen = ENDING;
             }
 
             if (!game_paused) {
                 // Game Logig
                 // Player logic
-                if (IsKeyDown(KEY_M)) players[0].position.y -= players[0].velocity.y;
-                if (IsKeyDown(KEY_N)) players[0].position.y += players[0].velocity.y;
-                if (IsKeyDown(KEY_Q)) players[1].position.y -= players[1].velocity.y;
-                if (IsKeyDown(KEY_E)) players[1].position.y += players[1].velocity.y;
+                if (IsKeyDown(KEY_M))
+                    players[0].position.y -= players[0].velocity.y;
+                if (IsKeyDown(KEY_N))
+                    players[0].position.y += players[0].velocity.y;
+                if (IsKeyDown(KEY_Q))
+                    players[1].position.y -= players[1].velocity.y;
+                if (IsKeyDown(KEY_E))
+                    players[1].position.y += players[1].velocity.y;
 
-                if (players[0].position.y <= 0) players[0].position.y = 0;
-                if (players[0].position.y + players[0].size.y >= GetScreenHeight()) players[0].position.y = GetScreenHeight() - players[0].size.y;
-                if (players[1].position.y <= 0) players[1].position.y = 1;
-                if (players[1].position.y + players[1].size.y >= GetScreenHeight()) players[1].position.y = GetScreenHeight() - players[1].size.y;
+                if (players[0].position.y <= 0)
+                    players[0].position.y = 0;
+                if (players[0].position.y + players[0].size.y >=
+                    GetScreenHeight())
+                    players[0].position.y =
+                        GetScreenHeight() - players[0].size.y;
+                if (players[1].position.y <= 0)
+                    players[1].position.y = 1;
+                if (players[1].position.y + players[1].size.y >=
+                    GetScreenHeight())
+                    players[1].position.y =
+                        GetScreenHeight() - players[1].size.y;
 
-                players[0].bounds = (Rectangle){ players[0].position.x, players[0].position.y, players[0].size.x, players[0].size.y };
-                players[1].bounds = (Rectangle){ players[1].position.x, players[1].position.y, players[1].size.x, players[1].size.y };
+                players[0].bounds =
+                    (Rectangle){players[0].position.x, players[0].position.y,
+                                players[0].size.x, players[0].size.y};
+                players[1].bounds =
+                    (Rectangle){players[1].position.x, players[1].position.y,
+                                players[1].size.x, players[1].size.y};
+
+                // Ball logic
+                ball.position.x += ball.velocity.x;
+                ball.position.y += ball.velocity.y;
+
+                if (ball.position.y + ball.radius >= GetScreenHeight() ||
+                    ball.position.y - ball.radius <= 0)
+                    ball.velocity.y *= -1;
+
+                // Collision logic
+                if (CheckCollisionCircleRec(ball.position, ball.radius,
+                                            players[0].bounds))
+                    ball.velocity.x *= -1;
+                if (CheckCollisionCircleRec(ball.position, ball.radius,
+                                            players[1].bounds))
+                    ball.velocity.x *= -1;
+
+                // Point logic
+                if (ball.position.x + ball.radius >= GetScreenWidth()) {
+                    players[0].points += 1;
+                    setBallPosition(&ball, false);
+                } else if (ball.position.x - ball.radius <= 0) {
+                    players[1].points += 1;
+                    setBallPosition(&ball, true);
+                }
             }
 
             break;
@@ -133,7 +184,7 @@ int main(void) {
 
         // To display the no. of seconds
         char *seconds = malloc(15 + 1);
-        sprintf(seconds, "Wait %d seconds", (int)(3 - frames_count / 60));
+        sprintf(seconds, "Wait %d seconds", (int)(TIME_TO_WAIT - frames_count / 60));
 
         switch (screen) {
         case INTRO:
@@ -183,7 +234,8 @@ int main(void) {
             // Draw pause message if needed
             if (game_paused) {
                 DrawText("GAME PAUSED",
-                         GetScreenWidth() / 2 - MeasureText("GAME PAUSED", 80) / 2,
+                         GetScreenWidth() / 2 -
+                             MeasureText("GAME PAUSED", 80) / 2,
                          350, 80, GRAY);
             }
 
