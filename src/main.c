@@ -4,11 +4,35 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#define DEBUG true
+
+#ifdef DEBUG
+#define DEBUG_EXP(EXP) EXP
+#else
+#define DEBUG_EXP(EXP)
+#endif /* ifdef  DEBUG */
+
 // --------------------------------------
 // Types
 // --------------------------------------
 
 typedef enum GameScreens { INTRO, TITLE, GAMEPLAY, ENDING } GameScreens;
+
+// Object types
+typedef struct Player {
+    Vector2 position;
+    Vector2 velocity;
+    Vector2 size;
+    Rectangle bounds;
+    int points;
+} Player;
+
+typedef struct Ball {
+    Vector2 position;
+    Vector2 velocity;
+    float radius;
+    bool active;
+} Ball;
 
 // --------------------------------------
 // Main Loop
@@ -22,6 +46,7 @@ int main(void) {
 
     // Gamestate variables
     GameScreens screen = INTRO;
+    DEBUG_EXP(screen = GAMEPLAY;)
 
     int16_t frames_count = 0; // Small number games counter
     char game_result = -1;    // 0 - loose, 1 - win, -1 - TBD
@@ -70,7 +95,7 @@ int main(void) {
             DrawText("Press ENTER to Play", 300, 450, 20, GRAY);
             break;
         case GAMEPLAY:
-            DrawText("Test Text", 20, 20, 40, GRAY);
+
             break;
         case ENDING:
             DrawText("Player X Won", 125, 350, 80, GRAY);
