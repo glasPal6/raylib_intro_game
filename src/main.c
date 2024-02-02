@@ -37,7 +37,6 @@ typedef struct Ball {
     Vector2 position;
     Vector2 velocity;
     float radius;
-    bool active;
 } Ball;
 
 // --------------------------------------
@@ -60,17 +59,21 @@ int main(void) {
 
     // Initialize players and ball
     Player players[2] = {0, 0};
-    players[0].position = (Vector2){ PLAYER_OFFSET, screen_height/2 - 10 };
-    players[0].velocity = (Vector2){ 8.0f, 0.0f };
-    players[0].size = (Vector2){ 50, 20 };
+    players[0].position = (Vector2){PLAYER_OFFSET, screen_height / 2 - 10};
+    players[0].velocity = (Vector2){8.0f, 0.0f};
+    players[0].size = (Vector2){50, 20};
     players[0].points = 0;
 
-    players[1].position = (Vector2){ screen_width - PLAYER_OFFSET, screen_height/2 - 10 };
-    players[1].velocity = (Vector2){ 8.0f, 0.0f };
-    players[1].size = (Vector2){ 50, 20 };
+    players[1].position =
+        (Vector2){screen_width - PLAYER_OFFSET, screen_height / 2 - 10};
+    players[1].velocity = (Vector2){8.0f, 0.0f};
+    players[1].size = (Vector2){50, 20};
     players[1].points = 0;
 
     Ball ball = {0};
+    ball.position = (Vector2){screen_width / 2, screen_height / 2};
+    ball.velocity = (Vector2){4.0f, 4.0f};
+    ball.radius = 5.0f;
 
     SetTargetFPS(60);
 
@@ -88,10 +91,12 @@ int main(void) {
             }
             break;
         case TITLE:
+            frames_count++;
             if (IsKeyPressed(KEY_ENTER))
                 screen = GAMEPLAY;
             break;
         case GAMEPLAY:
+            frames_count = 0;
             if (IsKeyPressed(KEY_ENTER))
                 screen = ENDING;
             break;
@@ -107,19 +112,20 @@ int main(void) {
 
         switch (screen) {
         case INTRO:
-            DrawText("Intro Screen", 150, 350, 80, GRAY);
-            DrawText(seconds, 330, 450, 20, GRAY);
+            DrawText("Intro Screen", GetScreenWidth()/2 - MeasureText("Intro Screen", 80)/2, 350, 80, GRAY);
+            DrawText(seconds, GetScreenWidth()/2 - MeasureText(seconds, 20)/2, 450, 20, GRAY);
             break;
         case TITLE:
-            DrawText("PONG", 300, 350, 80, GRAY);
-            DrawText("Press ENTER to Play", 300, 450, 20, GRAY);
+            DrawText("PONG", GetScreenWidth()/2 - MeasureText("PONG", 80)/2, 350, 80, GRAY);
+            if ((frames_count/30)%2 == 0)
+                DrawText("Press [ENTER] to Play", GetScreenWidth()/2 - MeasureText("Press [ENTER] to Play", 20)/2, 450, 20, GRAY);
             break;
         case GAMEPLAY:
 
             break;
         case ENDING:
-            DrawText("Player X Won", 125, 350, 80, GRAY);
-            DrawText(seconds, 330, 450, 20, GRAY);
+            DrawText("Player X Won", GetScreenWidth()/2 - MeasureText("Player X Won", 80)/2, 350, 80, GRAY);
+            DrawText(seconds, GetScreenWidth()/2 - MeasureText(seconds, 20)/2, 450, 20, GRAY);
             break;
         }
 
