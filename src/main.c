@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define DEBUG true
+#define DEBUG false
 
 #if DEBUG
 #define DEBUG_EXP(EXP) EXP
@@ -17,6 +17,7 @@
 // --------------------------------------
 
 #define PLAYER_OFFSET 50
+#define MAX_SCORE 10
 
 // --------------------------------------
 // Types
@@ -51,7 +52,6 @@ int main(void) {
 
     // Gamestate variables
     GameScreens screen = INTRO;
-    DEBUG_EXP(screen = GAMEPLAY;)
 
     int16_t frames_count = 0; // Small number games counter
     char game_result = -1;    // 0 - loose, 1 - win, -1 - TBD
@@ -100,6 +100,11 @@ int main(void) {
 
             if (IsKeyPressed('P')) {
                 game_paused = !game_paused;
+            }
+
+            if (players[0].points > MAX_SCORE ||
+                players[1].points > MAX_SCORE) {
+                screen = ENDING;
             }
 
             if (!game_paused) {
@@ -153,9 +158,14 @@ int main(void) {
 
             // Draw score
             char *score = malloc(15 + 1);
-            sprintf(score, "%d   %d", players[0].points, players[1].points);
-            DrawText(score, GetScreenWidth() / 2 - MeasureText(score, 80) / 2,
-                     0, 80, GRAY);
+            sprintf(score, "%d", players[0].points);
+            DrawText(score,
+                     GetScreenWidth() / 2 - MeasureText(score, 80) / 2 - 50, 0,
+                     80, GRAY);
+            sprintf(score, "%d", players[1].points);
+            DrawText(score,
+                     GetScreenWidth() / 2 - MeasureText(score, 80) / 2 + 50, 0,
+                     80, GRAY);
 
             // Draw pause message if needed
             if (game_paused) {
@@ -166,9 +176,21 @@ int main(void) {
 
             break;
         case ENDING:
-            DrawText("Player X Won",
-                     GetScreenWidth() / 2 - MeasureText("Player X Won", 80) / 2,
-                     350, 80, GRAY);
+            if (players[0].points == players[1].points) {
+                DrawText("DRAW",
+                         GetScreenWidth() / 2 - MeasureText("DRAW", 80) / 2,
+                         350, 80, GRAY);
+            } else if (players[0].points > players[1].points) {
+                DrawText("Player 1 Won",
+                         GetScreenWidth() / 2 -
+                             MeasureText("Player 1 Won", 80) / 2,
+                         350, 80, GRAY);
+            } else {
+                DrawText("Player 2 Won",
+                         GetScreenWidth() / 2 -
+                             MeasureText("Player 2 Won", 80) / 2,
+                         350, 80, GRAY);
+            }
             DrawText(seconds,
                      GetScreenWidth() / 2 - MeasureText(seconds, 20) / 2, 450,
                      20, GRAY);
