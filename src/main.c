@@ -13,6 +13,12 @@
 #endif /* ifdef  DEBUG */
 
 // --------------------------------------
+// Declarations
+// --------------------------------------
+
+#define PLAYER_OFFSET 50
+
+// --------------------------------------
 // Types
 // --------------------------------------
 
@@ -51,6 +57,20 @@ int main(void) {
     int16_t frames_count = 0; // Small number games counter
     char game_result = -1;    // 0 - loose, 1 - win, -1 - TBD
     bool game_paused = false; // Toggle if the game is paused
+
+    // Initialize players and ball
+    Player players[2] = {0, 0};
+    players[0].position = (Vector2){ PLAYER_OFFSET, screen_height/2 - 10 };
+    players[0].velocity = (Vector2){ 8.0f, 0.0f };
+    players[0].size = (Vector2){ 50, 20 };
+    players[0].points = 0;
+
+    players[1].position = (Vector2){ screen_width - PLAYER_OFFSET, screen_height/2 - 10 };
+    players[1].velocity = (Vector2){ 8.0f, 0.0f };
+    players[1].size = (Vector2){ 50, 20 };
+    players[1].points = 0;
+
+    Ball ball = {0};
 
     SetTargetFPS(60);
 
