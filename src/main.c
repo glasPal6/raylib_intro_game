@@ -16,9 +16,16 @@
 // Declarations
 // --------------------------------------
 
-#define TIME_TO_WAIT 5
 #define PLAYER_OFFSET 50
+#define PLAYER_SIZE_X 10
+#define PLAYER_SIZE_Y 50
+#define PLAYER_SPEED 8.0
+
+#define BALL_RADIUS 5.0
+
+#define TIME_TO_WAIT 5
 #define MAX_SCORE 5
+#define SPEED_NORMAL 7.5
 
 // --------------------------------------
 // Types
@@ -80,17 +87,17 @@ int main(void) {
         case ENDING:
             // Set Players and ball variables
             players[0].position =
-                (Vector2){PLAYER_OFFSET, GetScreenHeight() / 2 - 10};
-            players[0].velocity = (Vector2){0.0f, 8.0f};
-            players[0].size = (Vector2){10, 50};
+                (Vector2){PLAYER_OFFSET, GetScreenHeight() / 2 - PLAYER_SIZE_X};
+            players[0].velocity = (Vector2){0.0f, PLAYER_SPEED};
+            players[0].size = (Vector2){PLAYER_SIZE_X, PLAYER_SIZE_Y};
 
             players[1].position = (Vector2){screen_width - PLAYER_OFFSET,
-                                            GetScreenHeight() / 2 - 10};
-            players[1].velocity = (Vector2){0.0f, 8.0f};
-            players[1].size = (Vector2){10, 50};
+                                            GetScreenHeight() / 2 - PLAYER_SIZE_X};
+            players[1].velocity = (Vector2){0.0f, PLAYER_SPEED};
+            players[1].size = (Vector2){PLAYER_SIZE_X, PLAYER_SIZE_Y};
 
             setBallPosition(&ball, true);
-            ball.radius = 5.0f;
+            ball.radius = BALL_RADIUS;
             frames_count++;
             // Wait 3 seconds
             if (frames_count > 60 * TIME_TO_WAIT) {
@@ -184,7 +191,8 @@ int main(void) {
 
         // To display the no. of seconds
         char *seconds = malloc(15 + 1);
-        sprintf(seconds, "Wait %d seconds", (int)(TIME_TO_WAIT - frames_count / 60));
+        sprintf(seconds, "Wait %d seconds",
+                (int)(TIME_TO_WAIT - frames_count / 60));
 
         switch (screen) {
         case INTRO:
