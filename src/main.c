@@ -1,8 +1,10 @@
-#include "raylib.h"
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+
+#include "raylib.h"
+#include "raymath.h"
 
 #define DEBUG false
 
@@ -25,7 +27,8 @@
 
 #define TIME_TO_WAIT 5
 #define MAX_SCORE 5
-#define SPEED_NORMAL 7.5
+// #define SPEED_NORMAL 7.5
+#define SPEED_NORMAL 2
 
 // --------------------------------------
 // Types
@@ -54,10 +57,25 @@ typedef struct Ball {
 
 void setBallPosition(Ball *ball, bool left) {
     ball->position = (Vector2){GetScreenWidth() / 2, GetScreenHeight() / 2};
+
+    float y_speed = GetRandomValue(-10, 10);
     if (left)
-        ball->velocity = (Vector2){-4.0f, 2.0f};
+        ball->velocity = (Vector2){-4.0f, y_speed};
     else
-        ball->velocity = (Vector2){4.0f, 2.0f};
+        ball->velocity = (Vector2){4.0f, y_speed};
+
+    ball->velocity =
+        Vector2Scale(Vector2Normalize(ball->velocity), SPEED_NORMAL);
+}
+
+void ballPlayerCollision(Ball *ball, Player *player) {
+    // Check where if the collision is on the sides
+
+    // Change the balls angle based on where it is along the block
+    ball->velocity.x *= -1;
+
+    ball->velocity =
+        Vector2Scale(Vector2Normalize(ball->velocity), SPEED_NORMAL);
 }
 
 int main(void) {
@@ -70,7 +88,6 @@ int main(void) {
     GameScreens screen = INTRO;
 
     int16_t frames_count = 0; // Small number games counter
-    char game_result = -1;    // 0 - loose, 1 - win, -1 - TBD
     bool game_paused = false; // Toggle if the game is paused
 
     // Initialize players and ball
@@ -91,8 +108,9 @@ int main(void) {
             players[0].velocity = (Vector2){0.0f, PLAYER_SPEED};
             players[0].size = (Vector2){PLAYER_SIZE_X, PLAYER_SIZE_Y};
 
-            players[1].position = (Vector2){screen_width - PLAYER_OFFSET,
-                                            GetScreenHeight() / 2 - PLAYER_SIZE_X};
+            players[1].position =
+                (Vector2){screen_width - PLAYER_OFFSET,
+                          GetScreenHeight() / 2 - PLAYER_SIZE_X};
             players[1].velocity = (Vector2){0.0f, PLAYER_SPEED};
             players[1].size = (Vector2){PLAYER_SIZE_X, PLAYER_SIZE_Y};
 
@@ -167,10 +185,10 @@ int main(void) {
                 // Collision logic
                 if (CheckCollisionCircleRec(ball.position, ball.radius,
                                             players[0].bounds))
-                    ball.velocity.x *= -1;
+                    ballPlayerCollision(&ball, &players[0]);
                 if (CheckCollisionCircleRec(ball.position, ball.radius,
                                             players[1].bounds))
-                    ball.velocity.x *= -1;
+                    ballPlayerCollision(&ball, &players[1]);
 
                 // Point logic
                 if (ball.position.x + ball.radius >= GetScreenWidth()) {
