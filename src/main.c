@@ -1,3 +1,4 @@
+#include <math.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -28,7 +29,9 @@
 #define TIME_TO_WAIT 5
 #define MAX_SCORE 5
 // #define SPEED_NORMAL 7.5
-#define SPEED_NORMAL 2
+#define SPEED_NORMAL 0.5
+
+#define min_value(x,y) ((x < y) ? (x) : (y))
 
 // --------------------------------------
 // Types
@@ -58,7 +61,8 @@ typedef struct Ball {
 void setBallPosition(Ball *ball, bool left) {
     ball->position = (Vector2){GetScreenWidth() / 2, GetScreenHeight() / 2};
 
-    float y_speed = GetRandomValue(-10, 10);
+    // float y_speed = GetRandomValue(-10, 10);
+    float y_speed = 0;
     if (left)
         ball->velocity = (Vector2){-4.0f, y_speed};
     else
@@ -69,10 +73,31 @@ void setBallPosition(Ball *ball, bool left) {
 }
 
 void ballPlayerCollision(Ball *ball, Player *player) {
-    // Check where if the collision is on the sides
+    /* if (player->position.x < GetScreenWidth() / 2) {
+        if (ball->position.x + PLAYER_SIZE_X < PLAYER_OFFSET) {
+            ball->position.x = PLAYER_OFFSET + PLAYER_SIZE_X + BALL_RADIUS;
+        }
+    } else {
+        if (ball->position.x - PLAYER_SIZE_X > GetScreenWidth() - PLAYER_OFFSET) {
+            ball->position.x = GetScreenWidth() - PLAYER_SIZE_X - PLAYER_OFFSET - BALL_RADIUS;
+        }
+    } */
+    ball->velocity.x *= -1.0;
 
-    // Change the balls angle based on where it is along the block
-    ball->velocity.x *= -1;
+    if (ball->position.y <= player->position.y && ball->position.y >= player->position.y + PLAYER_SIZE_Y) {
+        // Change the balls angle based on where it is along the block
+        float angle = (player->position.y + player->size.y / 2 - ball->position.y) / PLAYER_SIZE_X;
+        ball->velocity.y = -2.0 * angle;
+
+        // Limit the size of the bounce
+        if (angle < 0) angle = -1 * min_value(PI/4, -1 * angle);
+        else angle = min_value(PI/4, angle);
+    } else if (ball->position.y > player->position.y) {
+        ball->velocity.y = PI/4;
+    } else {
+        ball->velocity.y = -PI/4;
+    }
+
 
     ball->velocity =
         Vector2Scale(Vector2Normalize(ball->velocity), SPEED_NORMAL);
@@ -245,6 +270,9 @@ int main(void) {
             DrawRectangle(players[1].position.x, players[1].position.y,
                           players[1].size.x, players[1].size.y, BLACK);
             DrawCircleV(ball.position, ball.radius, MAROON);
+
+            DrawLine(players[0].position.x, players[0].position.y + PLAYER_SIZE_Y/2, ball.position.x, ball.position.y, BLUE);
+            DrawLine(players[1].position.x, players[1].position.y + PLAYER_SIZE_Y/2, ball.position.x, ball.position.y, BLUE);
 
             // Draw score
             char *score = malloc(15 + 1);
