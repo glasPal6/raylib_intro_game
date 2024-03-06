@@ -112,6 +112,14 @@ int main(void) {
 
     Font font = LoadFont("assets/images/setback.png");
 
+    InitAudioDevice();
+    Sound fxStart = LoadSound("assets/audio/start.wav");
+    Sound fxBounce = LoadSound("assets/audio/bounce.wav");
+    Sound fxPoint = LoadSound("assets/audio/point.wav");
+
+    Music music = LoadMusicStream("assets/audio/background.wav");
+    PlayMusicStream(music);
+
     // Gamestate variables
     GameScreens screen = INTRO;
 
@@ -149,14 +157,17 @@ int main(void) {
             if (frames_count > 60 * TIME_TO_WAIT) {
                 screen = TITLE;
                 frames_count = 0;
+                PlaySound(fxStart);
             }
             break;
         case TITLE:
             players[0].points = 0;
             players[1].points = 0;
             frames_count++;
-            if (IsKeyPressed(KEY_ENTER))
+            if (IsKeyPressed(KEY_ENTER)) {
                 screen = GAMEPLAY;
+                PlaySound(fxStart);
+            }
             break;
         case GAMEPLAY:
             frames_count = 0;
@@ -212,24 +223,33 @@ int main(void) {
 
                 // Collision logic
                 if (CheckCollisionCircleRec(ball.position, ball.radius,
-                                            players[0].bounds))
+                                            players[0].bounds)) {
                     ballPlayerCollision(&ball, &players[0]);
+                    PlaySound(fxBounce);
+                }
                 if (CheckCollisionCircleRec(ball.position, ball.radius,
-                                            players[1].bounds))
+                                            players[1].bounds)) {
                     ballPlayerCollision(&ball, &players[1]);
+                    PlaySound(fxBounce);
+                }
 
                 // Point logic
                 if (ball.position.x + ball.radius >= GetScreenWidth()) {
                     players[0].points += 1;
+                    PlaySound(fxPoint);
                     setBallPosition(&ball, false);
                 } else if (ball.position.x - ball.radius <= 0) {
                     players[1].points += 1;
+                    PlaySound(fxPoint);
                     setBallPosition(&ball, true);
                 }
             }
 
             break;
         }
+
+        // Refill Music buffer
+        UpdateMusicStream(music);
 
         // Draw
         BeginDrawing();
@@ -350,7 +370,14 @@ int main(void) {
 
     UnloadFont(font);
 
+    UnloadSound(fxStart);
+    UnloadSound(fxBounce);
+    UnloadSound(fxPoint);
+
+    UnloadMusicStream(music);
+
     // Deinitialization
+    CloseAudioDevice();
     CloseWindow();
 
     return 0;

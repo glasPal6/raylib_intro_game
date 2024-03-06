@@ -6,3 +6,5 @@ Most of this is based off of: https://github.com/raysan5/raylib-intro-course, de
 ## The game
 
 A basic, classic pong game.
+
+The collision detection needs work.
