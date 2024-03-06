@@ -8,3 +8,12 @@ Most of this is based off of: https://github.com/raysan5/raylib-intro-course, de
 A basic, classic pong game.
 
 The collision detection needs work.
+
+# Building
+
+```
+mkdir build ; cd build
+cmake ..
+make
+./rayPong
+```
