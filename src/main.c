@@ -110,6 +110,8 @@ int main(void) {
     const int PLAYER_SIZE_Y = texPaddle.height;
     const int BALL_RADIUS = texBall.height;
 
+    Font font = LoadFont("assets/images/setback.png");
+
     // Gamestate variables
     GameScreens screen = INTRO;
 
@@ -240,16 +242,22 @@ int main(void) {
 
         switch (screen) {
         case INTRO:
-            DrawText("Intro Screen",
-                     GetScreenWidth() / 2 - MeasureText("Intro Screen", 80) / 2,
-                     350, 80, GRAY);
+            // DrawText("Intro Screen",
+            //          GetScreenWidth() / 2 - MeasureText("Intro Screen", 80) / 2,
+            //          350, 80, GRAY);
+            DrawTextEx(font, "Intro Screen", 
+                       (Vector2){GetScreenWidth() / 2 - MeasureTextEx(font, "Intro Screen", 80, 2).x / 2, 350}, 
+                       80, 2, BLUE);
             DrawText(seconds,
                      GetScreenWidth() / 2 - MeasureText(seconds, 20) / 2, 450,
                      20, GRAY);
             break;
         case TITLE:
-            DrawText("PONG", GetScreenWidth() / 2 - MeasureText("PONG", 80) / 2,
-                     350, 80, GRAY);
+            // DrawText("PONG", GetScreenWidth() / 2 - MeasureText("PONG", 80) / 2,
+            //          350, 80, GRAY);
+            DrawTextEx(font, "PONG", 
+                       (Vector2){GetScreenWidth() / 2 - MeasureTextEx(font, "PONG", 80, 2).x / 2, 350}, 
+                       80, 2, BLUE);
             if ((frames_count / 30) % 2 == 0)
                 DrawText("Press [ENTER] to Play",
                          GetScreenWidth() / 2 -
@@ -300,19 +308,30 @@ int main(void) {
             break;
         case ENDING:
             if (players[0].points == players[1].points) {
-                DrawText("DRAW",
-                         GetScreenWidth() / 2 - MeasureText("DRAW", 80) / 2,
-                         350, 80, GRAY);
+                // DrawText("DRAW",
+                //          GetScreenWidth() / 2 - MeasureText("DRAW", 80) / 2,
+                //          350, 80, GRAY);
+                DrawTextEx(font, "DRAW",
+                         (Vector2){GetScreenWidth() / 2 - MeasureTextEx(font, "DRAW", 80, 2).x / 2, 350}, 
+                         80, 2, BLUE);
             } else if (players[0].points > players[1].points) {
-                DrawText("Player 1 Won",
-                         GetScreenWidth() / 2 -
-                             MeasureText("Player 1 Won", 80) / 2,
-                         350, 80, GRAY);
+                // DrawText("Player 1 Won",
+                //          GetScreenWidth() / 2 -
+                //              MeasureText("Player 1 Won", 80) / 2,
+                //          350, 80, GRAY);
+                DrawTextEx(font, "Player 1 Won",
+                         (Vector2){GetScreenWidth() / 2 -
+                             MeasureTextEx(font, "Player 1 Won", 80, 2).x / 2,
+                         350}, 80, 2, BLUE);
             } else {
-                DrawText("Player 2 Won",
-                         GetScreenWidth() / 2 -
-                             MeasureText("Player 2 Won", 80) / 2,
-                         350, 80, GRAY);
+                // DrawText("Player 2 Won",
+                //          GetScreenWidth() / 2 -
+                //              MeasureText("Player 2 Won", 80) / 2,
+                //          350, 80, GRAY);
+                DrawTextEx(font, "Player 2 Won",
+                         (Vector2){GetScreenWidth() / 2 -
+                             MeasureTextEx(font, "Player 2 Won", 80, 2).x / 2,
+                         350}, 80, 2, BLUE);
             }
             DrawText(seconds,
                      GetScreenWidth() / 2 - MeasureText(seconds, 20) / 2, 450,
@@ -328,6 +347,8 @@ int main(void) {
     // Unload textures
     UnloadTexture(texBall);
     UnloadTexture(texPaddle);
+
+    UnloadFont(font);
 
     // Deinitialization
     CloseWindow();
