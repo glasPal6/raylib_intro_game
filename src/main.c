@@ -1,4 +1,3 @@
-#include <math.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -20,16 +19,12 @@
 // --------------------------------------
 
 #define PLAYER_OFFSET 50
-#define PLAYER_SIZE_X 10
-#define PLAYER_SIZE_Y 50
 #define PLAYER_SPEED 8.0
-
-#define BALL_RADIUS 5.0
 
 #define TIME_TO_WAIT 5
 #define MAX_SCORE 5
-// #define SPEED_NORMAL 7.5
-#define SPEED_NORMAL 0.5
+#define SPEED_NORMAL 7.5
+// #define SPEED_NORMAL 0.5
 
 #define min_value(x,y) ((x < y) ? (x) : (y))
 
@@ -84,9 +79,9 @@ void ballPlayerCollision(Ball *ball, Player *player) {
     } */
     ball->velocity.x *= -1.0;
 
-    if (ball->position.y <= player->position.y && ball->position.y >= player->position.y + PLAYER_SIZE_Y) {
+    if (ball->position.y <= player->position.y && ball->position.y >= player->position.y + player->size.y) {
         // Change the balls angle based on where it is along the block
-        float angle = (player->position.y + player->size.y / 2 - ball->position.y) / PLAYER_SIZE_X;
+        float angle = (player->position.y + player->size.y / 2 - ball->position.y) / player->size.x;
         ball->velocity.y = -2.0 * angle;
 
         // Limit the size of the bounce
@@ -98,7 +93,6 @@ void ballPlayerCollision(Ball *ball, Player *player) {
         ball->velocity.y = -PI/4;
     }
 
-
     ball->velocity =
         Vector2Scale(Vector2Normalize(ball->velocity), SPEED_NORMAL);
 }
@@ -108,6 +102,13 @@ int main(void) {
     int16_t screen_width = 800;
     int16_t screen_height = 800;
     InitWindow(screen_width, screen_height, "Pong!!!!!");
+
+    // Load resources
+    Texture2D texBall = LoadTexture("assets/images/ball.png"); 
+    Texture2D texPaddle = LoadTexture("assets/images/paddle.png"); 
+    const int PLAYER_SIZE_X = texPaddle.width;
+    const int PLAYER_SIZE_Y = texPaddle.height;
+    const int BALL_RADIUS = texBall.height;
 
     // Gamestate variables
     GameScreens screen = INTRO;
@@ -265,11 +266,14 @@ int main(void) {
             }
 
             // Draw players and ball
-            DrawRectangle(players[0].position.x, players[0].position.y,
-                          players[0].size.x, players[0].size.y, BLACK);
-            DrawRectangle(players[1].position.x, players[1].position.y,
-                          players[1].size.x, players[1].size.y, BLACK);
-            DrawCircleV(ball.position, ball.radius, MAROON);
+            // DrawRectangle(players[0].position.x, players[0].position.y,
+            //               players[0].size.x, players[0].size.y, BLACK);
+            // DrawRectangle(players[1].position.x, players[1].position.y,
+            //               players[1].size.x, players[1].size.y, BLACK);
+            // DrawCircleV(ball.position, ball.radius, MAROON);
+            DrawTextureEx(texPaddle, players[0].position, 0.0f, 1.0f, WHITE);
+            DrawTextureEx(texPaddle, players[1].position, 0.0f, 1.0f, WHITE);
+            DrawTexture(texBall, ball.position.x - ball.radius/2, ball.position.y - ball.radius/2, MAROON);
 
             DrawLine(players[0].position.x, players[0].position.y + PLAYER_SIZE_Y/2, ball.position.x, ball.position.y, BLUE);
             DrawLine(players[1].position.x, players[1].position.y + PLAYER_SIZE_Y/2, ball.position.x, ball.position.y, BLUE);
@@ -320,6 +324,10 @@ int main(void) {
 
         EndDrawing();
     }
+
+    // Unload textures
+    UnloadTexture(texBall);
+    UnloadTexture(texPaddle);
 
     // Deinitialization
     CloseWindow();
