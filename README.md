@@ -7,8 +7,6 @@ Most of this is based off of: https://github.com/raysan5/raylib-intro-course, de
 
 A basic, classic pong game.
 
-The collision detection needs work. The aim is to have the ball leave with a steeper angle the further it is from the centre of the paddle.
-
 ## Building
 
 ```
