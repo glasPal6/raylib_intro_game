@@ -17,6 +17,10 @@
 // --------------------------------------
 // Declarations
 // --------------------------------------
+#define PLAYER_1_UP KEY_M
+#define PLAYER_1_DOWN KEY_N
+#define PLAYER_2_UP KEY_Q
+#define PLAYER_2_DOWN KEY_E
 
 #define PLAYER_OFFSET 50
 #define PLAYER_SPEED 8.0
@@ -184,13 +188,13 @@ int main(void) {
             if (!game_paused) {
                 // Game Logig
                 // Player logic
-                if (IsKeyDown(KEY_M))
+                if (IsKeyDown(PLAYER_1_UP))
                     players[0].position.y -= players[0].velocity.y;
-                if (IsKeyDown(KEY_N))
+                if (IsKeyDown(PLAYER_1_DOWN))
                     players[0].position.y += players[0].velocity.y;
-                if (IsKeyDown(KEY_Q))
+                if (IsKeyDown(PLAYER_2_UP))
                     players[1].position.y -= players[1].velocity.y;
-                if (IsKeyDown(KEY_E))
+                if (IsKeyDown(PLAYER_2_DOWN))
                     players[1].position.y += players[1].velocity.y;
 
                 if (players[0].position.y <= 0)

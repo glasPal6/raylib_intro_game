@@ -9,7 +9,7 @@ A basic, classic pong game.
 
 The collision detection needs work. The aim is to have the ball leave with a steeper angle the further it is from the centre of the paddle.
 
-# Building
+## Building
 
 ```
 mkdir build ; cd build
@@ -20,3 +20,13 @@ make
 ```
 
 Note that `raylib` as a libraray will be fetched by the CMake build if it is not on your system. This has not been tested however.
+
+## Controls
+
+The player controls can be changed at the definitions in `main.c`
+- Player 1:
+    -- "M" up, "N" down
+- Player 2:
+    -- "Q" up, "E" down
+
+The game can ge paused with "p"
