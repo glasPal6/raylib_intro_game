@@ -13,8 +13,10 @@ The collision detection needs work. The aim is to have the ball leave with a ste
 
 ```
 mkdir build ; cd build
-cp ../src/assets .
+cp -r ../src/assets .
 cmake ..
 make
 ./rayPong
 ```
+
+Note that `raylib` as a libraray will be fetched by the CMake build if it is not on your system. This has not been tested however.
