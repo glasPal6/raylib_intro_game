@@ -131,7 +131,11 @@ int main(void) {
     bool game_paused = false; // Toggle if the game is paused
 
     // Initialize players and ball
-    Player players[2] = {0, 0};
+    // Player players[2] = {0, 0};
+    Player players[2] = {
+        { .velocity = (Vector2){0, 0} },
+        { .velocity = (Vector2){0, 0} }
+    };
     Ball ball = {0};
 
     SetTargetFPS(60);
