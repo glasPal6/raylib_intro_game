@@ -24,11 +24,11 @@
 
 #define PLAYER_OFFSET 50
 #define PLAYER_SPEED 8.0
+#define SPEED_INCREASE_FACTOR 1.01f
 
 #define TIME_TO_WAIT 5
+#define POINT_WAIT 1
 #define MAX_SCORE 5
-#define SPEED_NORMAL 7.5
-// #define SPEED_NORMAL 0.5
 
 #define min_value(x, y) ((x < y) ? (x) : (y))
 
@@ -52,6 +52,7 @@ typedef struct Ball {
     Vector2 velocity;
     float radius;
     bool half;
+    float speed_normal;
 } Ball;
 
 // --------------------------------------
@@ -71,8 +72,9 @@ void setBallPosition(Ball *ball, bool left) {
         ball->half = 1;
     }
 
+    ball->speed_normal = 7.5f;
     ball->velocity =
-        Vector2Scale(Vector2Normalize(ball->velocity), SPEED_NORMAL);
+        Vector2Scale(Vector2Normalize(ball->velocity), ball->speed_normal);
 }
 
 void ballPlayerCollision(Ball *ball, Player *player) {
@@ -89,11 +91,14 @@ void ballPlayerCollision(Ball *ball, Player *player) {
     ball->half = !ball->half;
 
     // Scale the y velocity
-    ball->velocity.y += fabsf(
-        ball->position.y - (player->position.y + (float)(player->size.y / 2))) / 10;
+    ball->velocity.y +=
+        fabsf(ball->position.y -
+              (player->position.y + (float)(player->size.y / 2))) /
+        10;
 
+    ball->speed_normal *= SPEED_INCREASE_FACTOR;
     ball->velocity =
-        Vector2Scale(Vector2Normalize(ball->velocity), SPEED_NORMAL);
+        Vector2Scale(Vector2Normalize(ball->velocity), ball->speed_normal);
 }
 
 int main(void) {
@@ -105,9 +110,9 @@ int main(void) {
     // Load resources
     Texture2D texBall = LoadTexture("assets/images/ball.png");
     Texture2D texPaddle = LoadTexture("assets/images/paddle.png");
-    const int PLAYER_SIZE_X = texPaddle.width;
-    const int PLAYER_SIZE_Y = texPaddle.height;
-    const int BALL_RADIUS = texBall.height;
+    const int player_size_x = texPaddle.width;
+    const int player_size_y = texPaddle.height;
+    const int ball_radius = texBall.height;
 
     Font font = LoadFont("assets/images/setback.png");
 
@@ -124,6 +129,7 @@ int main(void) {
 
     int16_t frames_count = 0; // Small number games counter
     bool game_paused = false; // Toggle if the game is paused
+    bool point_wait = false;  // Wait for a few seconds after a point
 
     // Initialize players and ball
     // Player players[2] = {0, 0};
@@ -141,20 +147,20 @@ int main(void) {
         case ENDING:
             // Set Players and ball variables
             players[0].position = (Vector2){
-                PLAYER_OFFSET, (float)(GetScreenHeight() / 2 - PLAYER_SIZE_X)};
+                PLAYER_OFFSET, (float)(GetScreenHeight() / 2 - player_size_x)};
             players[0].velocity = (Vector2){0.0f, PLAYER_SPEED};
             players[0].size =
-                (Vector2){(float)PLAYER_SIZE_X, (float)PLAYER_SIZE_Y};
+                (Vector2){(float)player_size_x, (float)player_size_y};
 
             players[1].position =
                 (Vector2){screen_width - PLAYER_OFFSET,
-                          (float)(GetScreenHeight() / 2 - PLAYER_SIZE_X)};
+                          (float)(GetScreenHeight() / 2 - player_size_x)};
             players[1].velocity = (Vector2){0.0f, PLAYER_SPEED};
             players[1].size =
-                (Vector2){(float)PLAYER_SIZE_X, (float)PLAYER_SIZE_Y};
+                (Vector2){(float)player_size_x, (float)player_size_y};
 
             setBallPosition(&ball, true);
-            ball.radius = (float)BALL_RADIUS;
+            ball.radius = (float)ball_radius;
             frames_count++;
             // Wait 3 seconds
             if (frames_count > 60 * TIME_TO_WAIT) {
@@ -170,10 +176,14 @@ int main(void) {
             if (IsKeyPressed(KEY_ENTER)) {
                 screen = GAMEPLAY;
                 PlaySound(fxStart);
+                frames_count = 0;
             }
             break;
         case GAMEPLAY:
-            frames_count = 0;
+            frames_count++;
+            if (point_wait && frames_count > 60 * POINT_WAIT) {
+                point_wait = false;
+            }
 
             if (IsKeyPressed('P')) {
                 game_paused = !game_paused;
@@ -185,7 +195,6 @@ int main(void) {
             }
 
             if (!game_paused) {
-                // Game Logig
                 // Player logic
                 if (IsKeyDown(PLAYER_1_UP))
                     players[0].position.y -= players[0].velocity.y;
@@ -217,8 +226,10 @@ int main(void) {
                                 players[1].size.x, players[1].size.y};
 
                 // Ball logic
-                ball.position.x += ball.velocity.x;
-                ball.position.y += ball.velocity.y;
+                if (!point_wait) {
+                    ball.position.x += ball.velocity.x;
+                    ball.position.y += ball.velocity.y;
+                }
 
                 if (ball.position.y + ball.radius >= (float)GetScreenHeight() ||
                     ball.position.y - ball.radius <= 0)
@@ -243,10 +254,14 @@ int main(void) {
                     players[0].points += 1;
                     PlaySound(fxPoint);
                     setBallPosition(&ball, false);
+                    point_wait = true;
+                    frames_count = 0;
                 } else if (ball.position.x - ball.radius <= 0) {
                     players[1].points += 1;
                     PlaySound(fxPoint);
                     setBallPosition(&ball, true);
+                    point_wait = true;
+                    frames_count = 0;
                 }
             }
 
