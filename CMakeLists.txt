@@ -34,6 +34,6 @@ PRIVATE
     -Werror 
     -Wall 
     -Wpedantic
-    #-Wconversion
+    -Wconversion
     -Wextra
 )

@@ -58,7 +58,7 @@ typedef struct Ball {
 // --------------------------------------
 
 void setBallPosition(Ball *ball, bool left) {
-    ball->position = (Vector2){GetScreenWidth() / 2, GetScreenHeight() / 2};
+    ball->position = (Vector2){(float)(GetScreenWidth() / 2), (float)(GetScreenHeight() / 2)};
 
     // float y_speed = GetRandomValue(-10, 10);
     float y_speed = 0;
@@ -81,12 +81,12 @@ void ballPlayerCollision(Ball *ball, Player *player) {
             ball->position.x = GetScreenWidth() - PLAYER_SIZE_X - PLAYER_OFFSET - BALL_RADIUS;
         }
     } */
-    ball->velocity.x *= -1.0;
+    ball->velocity.x *= -1;
 
     if (ball->position.y <= player->position.y && ball->position.y >= player->position.y + player->size.y) {
         // Change the balls angle based on where it is along the block
         float angle = (player->position.y + player->size.y / 2 - ball->position.y) / player->size.x;
-        ball->velocity.y = -2.0 * angle;
+        ball->velocity.y = -2 * angle;
 
         // Limit the size of the bounce
         if (angle < 0) angle = -1 * min_value(PI/4, -1 * angle);
@@ -148,18 +148,18 @@ int main(void) {
         case ENDING:
             // Set Players and ball variables
             players[0].position =
-                (Vector2){PLAYER_OFFSET, GetScreenHeight() / 2 - PLAYER_SIZE_X};
+                (Vector2){PLAYER_OFFSET, (float)(GetScreenHeight() / 2 - PLAYER_SIZE_X)};
             players[0].velocity = (Vector2){0.0f, PLAYER_SPEED};
-            players[0].size = (Vector2){PLAYER_SIZE_X, PLAYER_SIZE_Y};
+            players[0].size = (Vector2){(float)PLAYER_SIZE_X, (float)PLAYER_SIZE_Y};
 
             players[1].position =
                 (Vector2){screen_width - PLAYER_OFFSET,
-                          GetScreenHeight() / 2 - PLAYER_SIZE_X};
+                          (float)(GetScreenHeight() / 2 - PLAYER_SIZE_X)};
             players[1].velocity = (Vector2){0.0f, PLAYER_SPEED};
-            players[1].size = (Vector2){PLAYER_SIZE_X, PLAYER_SIZE_Y};
+            players[1].size = (Vector2){(float)PLAYER_SIZE_X, (float)PLAYER_SIZE_Y};
 
             setBallPosition(&ball, true);
-            ball.radius = BALL_RADIUS;
+            ball.radius = (float)BALL_RADIUS;
             frames_count++;
             // Wait 3 seconds
             if (frames_count > 60 * TIME_TO_WAIT) {
@@ -204,15 +204,15 @@ int main(void) {
                 if (players[0].position.y <= 0)
                     players[0].position.y = 0;
                 if (players[0].position.y + players[0].size.y >=
-                    GetScreenHeight())
+                    (float)GetScreenHeight())
                     players[0].position.y =
-                        GetScreenHeight() - players[0].size.y;
+                        (float)GetScreenHeight() - players[0].size.y;
                 if (players[1].position.y <= 0)
                     players[1].position.y = 1;
                 if (players[1].position.y + players[1].size.y >=
-                    GetScreenHeight())
+                    (float)GetScreenHeight())
                     players[1].position.y =
-                        GetScreenHeight() - players[1].size.y;
+                        (float)GetScreenHeight() - players[1].size.y;
 
                 players[0].bounds =
                     (Rectangle){players[0].position.x, players[0].position.y,
@@ -225,7 +225,7 @@ int main(void) {
                 ball.position.x += ball.velocity.x;
                 ball.position.y += ball.velocity.y;
 
-                if (ball.position.y + ball.radius >= GetScreenHeight() ||
+                if (ball.position.y + ball.radius >= (float)GetScreenHeight() ||
                     ball.position.y - ball.radius <= 0)
                     ball.velocity.y *= -1;
 
@@ -242,7 +242,7 @@ int main(void) {
                 }
 
                 // Point logic
-                if (ball.position.x + ball.radius >= GetScreenWidth()) {
+                if (ball.position.x + ball.radius >= (float)GetScreenWidth()) {
                     players[0].points += 1;
                     PlaySound(fxPoint);
                     setBallPosition(&ball, false);
@@ -274,7 +274,7 @@ int main(void) {
             //          GetScreenWidth() / 2 - MeasureText("Intro Screen", 80) / 2,
             //          350, 80, GRAY);
             DrawTextEx(font, "Intro Screen", 
-                       (Vector2){GetScreenWidth() / 2 - MeasureTextEx(font, "Intro Screen", 80, 2).x / 2, 350}, 
+                       (Vector2){(float)(GetScreenWidth() / 2) - MeasureTextEx(font, "Intro Screen", 80, 2).x / 2, 350}, 
                        80, 2, BLUE);
             DrawText(seconds,
                      GetScreenWidth() / 2 - MeasureText(seconds, 20) / 2, 450,
@@ -284,7 +284,7 @@ int main(void) {
             // DrawText("PONG", GetScreenWidth() / 2 - MeasureText("PONG", 80) / 2,
             //          350, 80, GRAY);
             DrawTextEx(font, "PONG", 
-                       (Vector2){GetScreenWidth() / 2 - MeasureTextEx(font, "PONG", 80, 2).x / 2, 350}, 
+                       (Vector2){(float)(GetScreenWidth() / 2) - MeasureTextEx(font, "PONG", 80, 2).x / 2, 350}, 
                        80, 2, BLUE);
             if ((frames_count / 30) % 2 == 0)
                 DrawText("Press [ENTER] to Play",
@@ -309,10 +309,10 @@ int main(void) {
             // DrawCircleV(ball.position, ball.radius, MAROON);
             DrawTextureEx(texPaddle, players[0].position, 0.0f, 1.0f, WHITE);
             DrawTextureEx(texPaddle, players[1].position, 0.0f, 1.0f, WHITE);
-            DrawTexture(texBall, ball.position.x - ball.radius/2, ball.position.y - ball.radius/2, MAROON);
+            DrawTexture(texBall, (int)(ball.position.x - ball.radius/2), (int)(ball.position.y - ball.radius/2), MAROON);
 
-            DrawLine(players[0].position.x, players[0].position.y + PLAYER_SIZE_Y/2, ball.position.x, ball.position.y, BLUE);
-            DrawLine(players[1].position.x, players[1].position.y + PLAYER_SIZE_Y/2, ball.position.x, ball.position.y, BLUE);
+            DrawLine((int)(players[0].position.x), (int)(players[0].position.y + (float)(PLAYER_SIZE_Y/2)), (int)(ball.position.x), (int)(ball.position.y), BLUE);
+            DrawLine((int)(players[1].position.x), (int)(players[1].position.y + (float)(PLAYER_SIZE_Y/2)), (int)(ball.position.x), (int)(ball.position.y), BLUE);
 
             // Draw score
             char *score = malloc(15 + 1);
@@ -340,7 +340,7 @@ int main(void) {
                 //          GetScreenWidth() / 2 - MeasureText("DRAW", 80) / 2,
                 //          350, 80, GRAY);
                 DrawTextEx(font, "DRAW",
-                         (Vector2){GetScreenWidth() / 2 - MeasureTextEx(font, "DRAW", 80, 2).x / 2, 350}, 
+                         (Vector2){(float)(GetScreenWidth() / 2) - MeasureTextEx(font, "DRAW", 80, 2).x / 2, 350}, 
                          80, 2, BLUE);
             } else if (players[0].points > players[1].points) {
                 // DrawText("Player 1 Won",
@@ -348,7 +348,7 @@ int main(void) {
                 //              MeasureText("Player 1 Won", 80) / 2,
                 //          350, 80, GRAY);
                 DrawTextEx(font, "Player 1 Won",
-                         (Vector2){GetScreenWidth() / 2 -
+                         (Vector2){(float)(GetScreenWidth() / 2) -
                              MeasureTextEx(font, "Player 1 Won", 80, 2).x / 2,
                          350}, 80, 2, BLUE);
             } else {
@@ -357,7 +357,7 @@ int main(void) {
                 //              MeasureText("Player 2 Won", 80) / 2,
                 //          350, 80, GRAY);
                 DrawTextEx(font, "Player 2 Won",
-                         (Vector2){GetScreenWidth() / 2 -
+                         (Vector2){(float)(GetScreenWidth() / 2) -
                              MeasureTextEx(font, "Player 2 Won", 80, 2).x / 2,
                          350}, 80, 2, BLUE);
             }
