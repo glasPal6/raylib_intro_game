@@ -27,8 +27,8 @@
 
 #define TIME_TO_WAIT 5
 #define MAX_SCORE 5
-// #define SPEED_NORMAL 7.5
-#define SPEED_NORMAL 0.5
+#define SPEED_NORMAL 7.5
+// #define SPEED_NORMAL 0.5
 
 #define min_value(x, y) ((x < y) ? (x) : (y))
 
@@ -76,12 +76,24 @@ void setBallPosition(Ball *ball, bool left) {
 }
 
 void ballPlayerCollision(Ball *ball, Player *player) {
+    // Change ball velocity for the bounce and remove multiple collisions
     ball->velocity.x *= -1;
-    if (ball->position.y < player->position.y ||
-        ball->position.y > player->position.y + player->size.y) {
+
+    if (ball->position.y < player->position.y && ball->velocity.y > 0) {
+        ball->velocity.y *= -1;
+    }
+    if (ball->position.y > player->position.y + player->size.y &&
+        ball->velocity.y < 0) {
         ball->velocity.y *= -1;
     }
     ball->half = !ball->half;
+
+    // Scale the y velocity
+    ball->velocity.y += fabsf(
+        ball->position.y - (player->position.y + (float)(player->size.y / 2))) / 10;
+
+    ball->velocity =
+        Vector2Scale(Vector2Normalize(ball->velocity), SPEED_NORMAL);
 }
 
 int main(void) {
@@ -214,12 +226,14 @@ int main(void) {
 
                 // Collision logic
                 if (CheckCollisionCircleRec(ball.position, ball.radius,
-                                            players[0].bounds) && ball.half == 0) {
+                                            players[0].bounds) &&
+                    ball.half == 0) {
                     ballPlayerCollision(&ball, &players[0]);
                     PlaySound(fxBounce);
                 }
                 if (CheckCollisionCircleRec(ball.position, ball.radius,
-                                            players[1].bounds) && ball.half == 1) {
+                                            players[1].bounds) &&
+                    ball.half == 1) {
                     ballPlayerCollision(&ball, &players[1]);
                     PlaySound(fxBounce);
                 }
@@ -300,13 +314,6 @@ int main(void) {
             DrawTextureEx(texPaddle, players[1].position, 0.0f, 1.0f, WHITE);
             DrawTexture(texBall, (int)(ball.position.x - ball.radius / 2),
                         (int)(ball.position.y - ball.radius / 2), MAROON);
-
-            DrawLine((int)(players[0].position.x),
-                     (int)(players[0].position.y + (float)(PLAYER_SIZE_Y / 2)),
-                     (int)(ball.position.x), (int)(ball.position.y), BLUE);
-            DrawLine((int)(players[1].position.x),
-                     (int)(players[1].position.y + (float)(PLAYER_SIZE_Y / 2)),
-                     (int)(ball.position.x), (int)(ball.position.y), BLUE);
 
             // Draw score
             char *score = malloc(15 + 1);
