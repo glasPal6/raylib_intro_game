@@ -268,7 +268,7 @@ int main(void) {
         ClearBackground(RAYWHITE);
 
         // To display the no. of seconds
-        char *seconds = malloc(15 + 1);
+        char *seconds = malloc(18);
         sprintf(seconds, "Wait %d seconds",
                 (int)(TIME_TO_WAIT - frames_count / 60));
 
