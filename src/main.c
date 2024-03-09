@@ -6,14 +6,6 @@
 #include "raylib.h"
 #include "raymath.h"
 
-#define DEBUG false
-
-#if DEBUG
-#define DEBUG_EXP(EXP) EXP
-#else
-#define DEBUG_EXP(EXP)
-#endif
-
 // --------------------------------------
 // Declarations
 // --------------------------------------

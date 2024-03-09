@@ -3,6 +3,9 @@ project(rayPong)
 
 # Generate compile_commands.json
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+set(CMAKE_BUILD_TYPE Release)
+# set(CMAKE_BUILD_TYPE Debug)
+# set(CMAKE_BUILD_TYPE RelWithDebInfo)
 
 # Dependencies
 set(RAYLIB_VERSION 5.0)
@@ -36,4 +39,9 @@ PRIVATE
     -Wpedantic
     -Wconversion
     -Wextra
+)
+target_compile_options(${PROJECT_NAME} 
+PRIVATE 
+    -O3
+    -mtune=native
 )
