@@ -97,7 +97,7 @@ int main(void) {
     // Initialization
     int16_t screen_width = 800;
     int16_t screen_height = 800;
-    InitWindow(screen_width, screen_height, "Pong!!!!!");
+    InitWindow(screen_width, screen_height, "Pong!");
 
     // Load resources
     Texture2D texBall = LoadTexture("assets/images/ball.png");

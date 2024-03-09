@@ -7,7 +7,7 @@ Most of this is based off of: https://github.com/raysan5/raylib-intro-course, de
 
 A basic, classic pong game. \
 There is a memory leak, but I think that it is a problem on Raylib's side. \
-The game has only been tested on Ubuntu 22.04. \
+The game has only been tested on Ubuntu 22.04.
 
 ## Building
 
