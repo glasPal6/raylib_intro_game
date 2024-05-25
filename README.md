@@ -1,15 +1,19 @@
 # rayPong
 
-The purpose of this is to get a basic understanding of raylib. \
-Most of this is based off of: https://github.com/raysan5/raylib-intro-course, definitley check that out.
+<p align=center>
+    <img src="gameplay.png", alt="drawing", width="600">
+</p>
+
+> [!EXPECTATION LEVEL]
+> The purpose of this is to get a basic understanding of raylib. 
 
 ## The Game
 
-A basic, classic pong game. \
-There is a memory leak, but I think that it is a problem on Raylib's side. \
-The game has only been tested on Ubuntu 22.04.
+A basic, classic pong game. The game has only been tested on Ubuntu 22.04.
 
-## Building
+Most of this is based off of: [raylib intro course](https://github.com/raysan5/raylib-intro-course), definitley check that out.
+
+## Building on Linux/MacOS
 
 ```
 mkdir build ; cd build
@@ -19,11 +23,11 @@ make
 ./rayPong
 ```
 
-Note that `raylib` as a libraray will be fetched by the CMake build if it is not on your system.
+Note that `raylib` as a library will be fetched by the CMake build if it is not on your system.
 
 ## Controls
 
-The player controls can be changed at the definitions in `main.c`
+The player controls can be changed at the definitions in `main.c`, the defaults are:
 - Player 1:
     - "M" up
     - "N" down
