@@ -4,8 +4,8 @@
     <img src="gameplay.png", alt="drawing", width="600">
 </p>
 
-> [!EXPECTATION LEVEL]
-> The purpose of this is to get a basic understanding of raylib. 
+> [!Warning]
+> The purpose of this is to get a basic understanding of raylib. Lower your expectations.
 
 ## The Game
 
