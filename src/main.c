@@ -14,7 +14,7 @@
 
 #define PLAYER_OFFSET 50
 #define PLAYER_SPEED 8.0
-#define SPEED_INCREASE_FACTOR 1.01f
+#define SPEED_INCREASE_FACTOR 1.1f
 
 #define TIME_TO_WAIT 5
 #define POINT_WAIT 1
@@ -330,6 +330,7 @@ int main(void) {
             DrawText(score,
                      GetScreenWidth() / 2 - MeasureText(score, 80) / 2 + 100, 0,
                      80, GRAY);
+            free(score);
 
             // Draw pause message if needed
             if (game_paused) {
